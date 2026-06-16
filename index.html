@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chroma — Palette Generator</title>
+  <meta name="description" content="Generate beautiful random color palettes. Click to copy. Press space to surprise yourself." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="locked">
+  <!-- Password gate -->
+  <div class="gate" id="gate">
+    <form class="gate__box" id="gateForm" autocomplete="off">
+      <div class="gate__emoji" aria-hidden="true">🎨</div>
+      <h2 class="gate__title">chroma<span class="dot">.</span></h2>
+      <p class="gate__subtitle">Enter the password to continue</p>
+      <input
+        class="gate__input"
+        id="gateInput"
+        type="password"
+        placeholder="Password"
+        aria-label="Password"
+        autofocus
+      />
+      <button class="gate__submit" type="submit">Unlock</button>
+      <p class="gate__error" id="gateError" role="alert"></p>
+    </form>
+  </div>
+
+  <main class="palette" id="palette" aria-label="Color palette"></main>
+
+  <header class="topbar">
+    <h1 class="wordmark">chroma<span class="dot">.</span></h1>
+    <p class="tagline" id="schemeLabel">tap a swatch to copy</p>
+  </header>
+
+  <div class="controls">
+    <button class="generate" id="generateBtn" aria-keyshortcuts="Space">
+      <span class="generate__icon" aria-hidden="true">✦</span>
+      <span class="generate__label">Generate</span>
+      <kbd class="generate__kbd">Space</kbd>
+    </button>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

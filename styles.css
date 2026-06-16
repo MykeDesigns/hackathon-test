@@ -1,0 +1,430 @@
+:root {
+  --ease: cubic-bezier(0.65, 0, 0.35, 1);
+  --bar-h: 0px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  background: #0b0b0f;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Password gate ---------- */
+.gate {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: #0b0b0f;
+  background-image: radial-gradient(
+      circle at 20% 20%,
+      rgba(129, 152, 223, 0.25),
+      transparent 45%
+    ),
+    radial-gradient(circle at 80% 75%, rgba(216, 138, 210, 0.25), transparent 45%);
+}
+
+/* When unlocked, hide the gate and reveal content */
+body:not(.locked) .gate {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s var(--ease), visibility 0.5s var(--ease);
+}
+
+/* Keep the page content hidden until unlocked */
+body.locked .palette,
+body.locked .topbar,
+body.locked .controls {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.gate__box {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 2.5rem 2rem;
+  border-radius: 24px;
+  background: rgba(22, 22, 28, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+  animation: gateIn 0.6s var(--ease) both;
+}
+
+@keyframes gateIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+}
+
+.gate__emoji {
+  font-size: 2.6rem;
+  margin-bottom: 0.2rem;
+}
+
+.gate__title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.gate__subtitle {
+  font-size: 0.9rem;
+  opacity: 0.6;
+  margin-bottom: 1rem;
+}
+
+.gate__input {
+  width: 100%;
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.gate__input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.gate__input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.gate.shake .gate__box {
+  animation: shake 0.45s var(--ease);
+}
+
+.gate.shake .gate__input {
+  border-color: #ff6b6b;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-8px); }
+  40%, 60% { transform: translateX(8px); }
+}
+
+.gate__submit {
+  width: 100%;
+  margin-top: 0.9rem;
+  padding: 0.9rem 1.1rem;
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+  color: #0b0b0f;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), opacity 0.2s ease;
+}
+
+.gate__submit:hover {
+  transform: translateY(-2px);
+}
+
+.gate__submit:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.gate__error {
+  min-height: 1.2rem;
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+  color: #ff8a8a;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.gate__error.show {
+  opacity: 1;
+}
+
+/* ---------- Palette ---------- */
+.palette {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.swatch {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  cursor: pointer;
+  transition: flex-grow 0.55s var(--ease);
+  overflow: hidden;
+  border: none;
+  outline: none;
+  font-family: inherit;
+}
+
+.swatch:hover {
+  flex-grow: 1.35;
+}
+
+.swatch__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  padding-bottom: clamp(2rem, 9vh, 6rem);
+  transform: translateY(0);
+  transition: transform 0.4s var(--ease), opacity 0.4s var(--ease);
+}
+
+.swatch__hex {
+  font-size: clamp(1rem, 2.4vw, 1.6rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  white-space: nowrap;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.swatch:hover .swatch__hex {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-4px);
+}
+
+.swatch__copy {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.swatch:hover .swatch__copy {
+  opacity: 0.85;
+  transform: translateY(0);
+}
+
+/* entrance animation */
+@keyframes rise {
+  from {
+    transform: translateY(110%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.swatch.animate {
+  animation: rise 0.6s var(--ease) both;
+}
+
+/* copy flash */
+.swatch.copied .swatch__hex {
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+}
+
+/* ---------- Top bar ---------- */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 1.5rem 1.8rem;
+  pointer-events: none;
+  z-index: 10;
+  mix-blend-mode: difference;
+}
+
+.wordmark {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.wordmark .dot {
+  color: #fff;
+  animation: blink 1.6s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.tagline {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0.85;
+}
+
+/* ---------- Generate button ---------- */
+.controls {
+  position: fixed;
+  bottom: clamp(1.5rem, 5vh, 3rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.generate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.95rem 1.6rem;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: #0b0b0f;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.generate:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.55);
+}
+
+.generate:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.generate__icon {
+  display: inline-block;
+  font-size: 1.05rem;
+  transition: transform 0.5s var(--ease);
+}
+
+.generate:hover .generate__icon {
+  transform: rotate(180deg);
+}
+
+.generate__kbd {
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0.18rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.08);
+  color: #0b0b0f;
+}
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed;
+  bottom: clamp(5.5rem, 14vh, 8rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  padding: 0.7rem 1.2rem;
+  border-radius: 12px;
+  background: rgba(20, 20, 26, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s var(--ease);
+  z-index: 30;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast__chip {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 3px;
+  margin-right: 0.5rem;
+  vertical-align: -1px;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 640px) {
+  .palette {
+    flex-direction: column;
+  }
+  .swatch {
+    align-items: center;
+  }
+  .swatch__inner {
+    flex-direction: row;
+    padding-bottom: 0;
+    gap: 0.8rem;
+  }
+  .swatch:hover {
+    flex-grow: 1.6;
+  }
+  .swatch__copy {
+    display: none;
+  }
+  .topbar {
+    flex-direction: column;
+    gap: 0.3rem;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
